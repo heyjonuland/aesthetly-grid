@@ -1,23 +1,156 @@
-$grid-max-width: 1024px !default;
-
+// Default Values
+$grid-max-width-default: 1024px;
+$grid-max-width-xl: 1400px ;
+$grid-columns: 4 !default;
 $grid-margin: 1% !default;
 $grid-padding: 1% !default;
 
-$grid-full-width: 100% - 2($grid-margin);
-$grid-half-width: 50% - 2($grid-margin);
-$grid-fourth-width: 25% - 2($grid-margin);
-$grid-three-fourth-width: 75% - 2($grid-margin);
-$grid-third-width: 33.33333% - 2($grid-margin);
-$grid-two-third-width: 66.66666% - 2($grid-margin);
+// Responsive Layout
+$grid-breakpoints: (
+	xl: "min-width: #{$grid-max-width-xl}",
+	l: "min-width: 800px) and ( max-width: #{$grid-max-width-xl - 1}",
+	m: "min-width: 481px) and (max-width: 800px",
+	s: "max-width: 480px",
+);
 
+// Mixins
+@mixin breakpoints($screen-size) {
+	@media screen and (#{map-get($grid-breakpoints, $screen-size)}) {
+		@content;
+	}
+}
 
+@mixin box-sizing($val) {
+	-webkit-box-sizing: $val;
+	-moz-box-sizing: $val;
+	-ms-box-sizing: $val;
+	-o-box-sizing: $val;
+	box-sizing: $val;
+}
+
+// Styles
 html, body { width: 100%; height: 100%; margin: 0; padding: 0;}
 
-.col {
-	padding: $grid-padding;
-	margin: $grid-margin;
-	display: block;
-	float: left;
+.container {
+	width: 100%; 
+	padding: $grid-margin;
 	@include box-sizing(border-box);
 }
 
+//// Grid: Main \\\\
+// Columns
+@for $i from 1 to ($grid-columns + 1) {
+	.col#{$i} {
+		padding: $grid-padding;
+		margin: $grid-margin;
+		display: block;
+		float: left;
+		width: (100% * ($i/$grid-columns) - (2 * $grid-margin));
+		max-width: $grid-max-width-default;
+		transition: width .3s ease;
+		@include box-sizing(border-box);
+
+		@include breakpoints(xl) {
+			max-width: $grid-max-width-xl;
+		}
+
+		@include breakpoints(s) {
+			width: (100% - (2 * $grid-margin));
+		}
+	}
+
+	@if $i == $grid-columns {
+		.col-full {
+			padding: $grid-padding;
+			margin: $grid-margin;
+			display: block;
+			float: left;
+			width: (100% * ($i/$grid-columns) - (2 * $grid-margin));
+			max-width: $grid-max-width-default;
+			transition: width .3s ease;
+			@include box-sizing(border-box);
+
+			@include breakpoints(xl) {
+				max-width: $grid-max-width-xl;
+			}
+		}
+	}
+}
+// Thirds
+@for $i from 1 to 3 {
+	@if $i == 1 {
+		.col-one-third {
+			padding: $grid-padding;
+			margin: $grid-margin;
+			display: block;
+			float: left;
+			width: (100% * ($i/3) - (2 * $grid-margin));
+			max-width: $grid-max-width-default;
+			transition: width .3s ease;			
+			@include box-sizing(border-box);
+
+			@include breakpoints(xl) {
+				max-width: $grid-max-width-xl;
+			}
+
+			@include breakpoints(s) {
+				width: (100% - (2 * $grid-margin));
+			}
+		}
+	} @else if $i == 2 {
+		.col-two-thirds {
+			padding: $grid-padding;
+			margin: $grid-margin;
+			display: block;
+			float: left;
+			width: (100% * ($i/3) - (2 * $grid-margin));
+			max-width: $grid-max-width-default;
+			transition: width .3s ease;			
+			@include box-sizing(border-box);
+
+			@include breakpoints(xl) {
+				max-width: $grid-max-width-xl;
+			}
+
+			@include breakpoints(s) {
+				width: (100% - (2 * $grid-margin));
+			}
+		}
+	}
+}
+
+//// Responsive Grid \\\\
+// Screens - Main
+@for $i from 1 to ($grid-columns + 1) {
+	@each $screen, $point in $grid-breakpoints {
+		@include breakpoints($screen) {
+			@if $i == $grid-columns {
+				.#{$screen}-full {
+					width: 100% - (2 * $grid-margin);
+				}
+
+			} @else {
+				.#{$screen}#{$i} {
+					width: (100% * ($i/$grid-columns) - (2 * $grid-margin));
+		    	}
+			}
+		}
+	}		
+}
+
+// Screens - Thirds
+@for $i from 1 to 3 {
+	@each $screen, $point in $grid-breakpoints {
+		@include breakpoints($screen) {
+			@if $i == 1 {
+				.#{$screen}-one-third {
+					width: (100% * ($i/3) - (2 * $grid-margin));
+				}
+			} @else if $i == 2 {
+				.#{$screen}-two-thirds {
+					width: (100% * ($i/3) - (2 * $grid-margin));
+				}
+			}
+		}
+	}	
+}
